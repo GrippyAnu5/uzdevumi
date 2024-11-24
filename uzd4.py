@@ -2,41 +2,38 @@
 import sys
 sys.stdout.reconfigure(encoding='utf-8')
 
-from transformers import pipeline
+from deep_translator import GoogleTranslator
+from textblob import TextBlob
 
-# Инициализация анализа настроений
-analyzer = pipeline("sentiment-analysis", model="nlptown/bert-base-multilingual-uncased-sentiment")
-
-# Функция анализа
-def noskanas_analize(teikumi):
+def noskanas_analize_ar_tulkojumu(teikumi):
     rezultati = []
     for teikums in teikumi:
-        result = analyzer(teikums)[0]
-        label = result['label']
-        score = result['score']
+        # tulko uz angļu valodu jo biblioēkas kas novērtē noskaņojumu ir pilnīga huiņa
+        tulkots = GoogleTranslator(source='lv', target='en').translate(teikums)
         
-        # Классификация настроений
-        if "5" in label or "4" in label:
+        blob = TextBlob(tulkots)
+        polaritate = blob.sentiment.polarity  # pievieno noskaņojumu
+        
+        if polaritate > 0.5:
             noskanas = "Pozitīvs"
-        elif "1" in label or "2" in label:
+        elif polaritate < -0.5:
             noskanas = "Negatīvs"
         else:
             noskanas = "Neitrāls"
         
-        rezultati.append((teikums, noskanas, round(score, 2)))
+        rezultati.append((teikums, noskanas, round(polaritate, 2)))
     return rezultati
 
-# Teikumi
 teikumi = [
     "Šis produkts ir lielisks, esmu ļoti apmierināts!",
     "Esmu vīlies, produkts neatbilst aprakstam.",
-    "Neitrāls produkts, nekas īpašs."
+    "Neitrāls produkts, nekas īpašs.",
+    "Man garšo sperma. Tā ir ka saldais tiramisu deserts. Ļoti garšīgs deserts!",
+    "Man negaršo sperma. Tas smird ka slikts siers."
 ]
 
-# Анализ
-rezultati = noskanas_analize(teikumi)
+rezultati = noskanas_analize_ar_tulkojumu(teikumi)
 
-# Вывод результата
 print("Teikumu noskaņojuma analīze:")
-for teikums, noskanas, score in rezultati:
-    print(f"Teikums: \"{teikums}\" → Noskaņojums: {noskanas} (Precizitāte: {score})")
+for teikums, noskanas, polaritate in rezultati:
+    print(f"Teikums: \"{teikums}\" → Noskaņojums: {noskanas} (Polaritate: {polaritate})")
