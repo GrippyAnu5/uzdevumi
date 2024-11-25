@@ -7,7 +7,7 @@ from deep_translator import GoogleTranslator
 def translate_text(sentences, source_lang='lv', target_lang='en'):
     translator = GoogleTranslator(source=source_lang, target=target_lang)
     translated_sentences = []
-    
+
     for sentence in sentences:
         try:
             translated = translator.translate(sentence)
@@ -15,7 +15,7 @@ def translate_text(sentences, source_lang='lv', target_lang='en'):
         except Exception as e:
             print(f"Kļūda tulkošanā: {e}")
             translated_sentences.append("Tulkošana neizdevās")
-    
+
     return translated_sentences
 
 latvian_sentences = [

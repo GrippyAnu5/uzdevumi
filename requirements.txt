@@ -1,0 +1,14 @@
+transformers
+re
+collections
+langid
+deep_translator
+textblob
+gensim.models
+urllib.request
+gzip
+os
+stanza
+tkinter
+threading
+queue
